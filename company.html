@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Dashboard - Idea Marketplace</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .glass {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white">
+
+<div class="container mx-auto px-4 py-6">
+
+  <!-- HEADER -->
+  <header class="glass flex flex-wrap justify-between items-center p-4 rounded-2xl shadow-xl mb-6">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-bold px-4 py-2 rounded-full">
+        IM
+      </div>
+      <div>
+        <div class="font-semibold text-lg">Idea Marketplace</div>
+        <div class="text-sm text-gray-200">Company Dashboard</div>
+      </div>
+    </div>
+
+    <nav class="flex flex-wrap gap-5 text-gray-200 font-medium mt-3 md:mt-0">
+      <a href="home.html" class="hover:text-white">Marketplace</a>
+      <a href="cre in com.html" class="hover:text-white">Creators</a>
+      <a href="company.html" class="hover:text-white">My Dashboard</a>
+      <a href="#" onclick="openAccountSidebar()" class="hover:text-white">Account</a>
+    </nav>
+  </header>
+
+  <!-- INBOX BUTTON -->
+  <div class="mb-6">
+    <button onclick="window.location.href='company_inbox.html'"
+      class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-5 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+      View Inbox
+    </button>
+  </div>
+
+  <!-- ACCOUNT SIDEBAR -->
+  <div id="accountSidebar"
+       class="fixed top-0 right-[-320px] w-[300px] h-full glass p-5 transition-all duration-300 z-[1001]">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Account</h3>
+      <span class="cursor-pointer text-2xl" onclick="closeAccountSidebar()">×</span>
+    </div>
+
+    <button class="w-full bg-indigo-600 text-white py-2 rounded-lg mb-3"
+            onclick="goToEditProfile()">Edit Profile</button>
+
+    <button class="w-full bg-purple-600 text-white py-2 rounded-lg mb-3"
+            onclick="switchAccount()">Switch Account</button>
+
+    <button class="w-full bg-red-600 text-white py-2 rounded-lg"
+            onclick="logout()">Logout</button>
+  </div>
+
+  <div id="sidebarOverlay"
+       class="fixed inset-0 bg-black/40 hidden z-[1000]"
+       onclick="closeAccountSidebar()"></div>
+
+  <!-- HERO + STATS -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+    <!-- Hero Card -->
+    <div class="md:col-span-2 glass p-6 rounded-2xl shadow-xl">
+      <h1 class="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+        Welcome, Company!
+      </h1>
+      <p class="text-gray-200 mb-4">
+        Manage your requirements and proposals.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="requerments.html"
+           class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-5 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+          + Post Requirement
+        </a>
+
+        <a href="cre in com.html"
+           class="border border-white text-white px-5 py-2 rounded-xl font-semibold hover:bg-white hover:text-indigo-900 transition">
+          Browse Creators
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Active Requirements</span>
+        <b class="text-xl text-pink-300" id="activeReq">0</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Total Requirements</span>
+        <b class="text-xl text-indigo-300" id="totalReq">0</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Deals Closed</span>
+        <b class="text-xl text-green-300" id="dealsClosed">0</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Budget Spent</span>
+        <b class="text-xl text-purple-300" id="budgetSpent">$0</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUIREMENTS TABLE -->
+  <section class="glass p-6 rounded-xl shadow-xl mb-6">
+
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+      <h2 class="text-lg font-semibold text-white">Your Requirements</h2>
+
+      <div class="flex gap-3">
+        <a href="requerments.html"
+           class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-xl font-semibold">
+          + New Requirement
+        </a>
+
+        <button id="exportCompanyBtn"
+                class="border border-white text-white px-4 py-2 rounded-xl font-semibold">
+          Export
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-gray-400">
+            <th class="p-2">Requirement</th>
+            <th class="p-2">Status</th>
+            <th class="p-2">Proposals</th>
+            <th class="p-2">Deadline</th>
+            <th class="p-2">Budget</th>
+          </tr>
+        </thead>
+        <tbody id="requirements-table"></tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-gray-200 text-sm mt-6">
+    © 2025 Idea Marketplace
+  </footer>
+
+</div>
+
+<script>
+/* ================= AUTH ================= */
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if (!token) {
+  alert("Please login first");
+  window.location.href = "indexlogin.html";
+}
+if (role !== "company") {
+  alert("Company access only");
+  window.location.href = "creator.html";
+}
+
+/* ================= LOAD REQUIREMENTS ================= */
+async function loadCompanyRequirements() {
+  try {
+    const res = await fetch("http://localhost:5001/api/requirements/company", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+    const tbody = document.getElementById("requirements-table");
+    tbody.innerHTML = "";
+
+    if (!Array.isArray(data) || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4">No requirements</td></tr>`;
+      return;
+    }
+
+    data.forEach(req => {
+      tbody.innerHTML += `
+        <tr class="border-b border-gray-600">
+          <td class="p-2">${req.title}</td>
+          <td class="p-2">${req.status || "open"}</td>
+          <td class="p-2">${req.applications?.length || 0}</td>
+          <td class="p-2">${req.deadline ? new Date(req.deadline).toLocaleDateString() : "-"}</td>
+          <td class="p-2">$${req.budget || 0}</td>
+        </tr>`;
+    });
+
+  } catch (err) {
+    alert("Failed to load requirements");
+  }
+}
+
+/* ================= STATS ================= */
+async function loadCompanyStats() {
+  const res = await fetch("http://localhost:5001/api/companies/dashboard/stats", {
+    headers: { Authorization: "Bearer " + token }
+  });
+  const data = await res.json();
+
+  document.getElementById("activeReq").textContent = data.activeRequirements || 0;
+  document.getElementById("totalReq").textContent = data.totalRequirements || 0;
+  document.getElementById("dealsClosed").textContent = data.dealsClosed || 0;
+  document.getElementById("budgetSpent").textContent = "$" + (data.budgetSpent || 0);
+}
+
+/* ================= EXPORT ================= */
+document.getElementById("exportCompanyBtn").addEventListener("click", async () => {
+  const res = await fetch("http://localhost:5001/api/requirements/company", {
+    headers: { Authorization: "Bearer " + token }
+  });
+  const data = await res.json();
+
+  let csv = "Title,Status,Budget\n";
+  data.forEach(r => csv += `"${r.title}","${r.status}",${r.budget}\n`);
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "requirements.csv";
+  a.click();
+});
+
+/* ================= SIDEBAR ================= */
+function openAccountSidebar() {
+  accountSidebar.style.right = "0";
+  sidebarOverlay.classList.remove("hidden");
+}
+function closeAccountSidebar() {
+  accountSidebar.style.right = "-320px";
+  sidebarOverlay.classList.add("hidden");
+}
+function logout() {
+  localStorage.clear();
+  window.location.href = "indexlogin.html";
+}
+function switchAccount() {
+  logout();
+}
+function goToEditProfile() {
+  window.location.href = "companyProfileEdit.html";
+}
+
+/* INIT */
+window.addEventListener("DOMContentLoaded", () => {
+  loadCompanyRequirements();
+  loadCompanyStats();
+});
+</script>
+
+</body>
+</html>

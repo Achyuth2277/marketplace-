@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Open Company Requirements | Idea Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .glass {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white px-4 py-10">
+
+<div class="max-w-6xl mx-auto">
+
+  <!-- HEADER -->
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+      Open Company Requirements
+    </h1>
+    <p class="text-gray-200 mt-2">Browse and apply to opportunities</p>
+  </div>
+
+  <!-- REQUIREMENTS GRID -->
+  <div id="requirementsContainer"
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <p class="col-span-full text-center text-gray-200">Loading...</p>
+  </div>
+
+</div>
+
+<script>
+/* --------------------------------------------------
+   AUTH CHECK
+-------------------------------------------------- */
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if (!token || role !== "creator") {
+  alert("Creator login required");
+  window.location.href = "indexlogin.html";
+}
+
+/* --------------------------------------------------
+   LOAD REQUIREMENTS
+-------------------------------------------------- */
+async function loadRequirements() {
+  try {
+    const res = await fetch("http://localhost:5001/api/requirements", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      localStorage.clear();
+      window.location.href = "indexlogin.html";
+      return;
+    }
+
+    const requirements = await res.json();
+    const container = document.getElementById("requirementsContainer");
+    container.innerHTML = "";
+
+    if (!Array.isArray(requirements) || requirements.length === 0) {
+      container.innerHTML =
+        `<p class="col-span-full text-center text-gray-200">No requirements found</p>`;
+      return;
+    }
+
+    requirements.forEach(req => {
+      container.innerHTML += `
+        <div class="glass p-5 rounded-2xl shadow-lg hover:-translate-y-1 transition">
+
+          <h3 class="text-lg font-semibold mb-2">${req.title}</h3>
+          <p class="text-gray-200 mb-3">
+            ${req.description || "No description provided."}
+          </p>
+
+          <div class="text-sm text-gray-300 space-y-1 mb-4">
+            <p><b>Company:</b> ${req.postedBy?.name || "Company"}</p>
+            <p><b>Budget:</b> $${req.budget || 0}</p>
+            <p><b>Deadline:</b>
+              ${
+                req.deadline
+                  ? new Date(req.deadline).toLocaleDateString()
+                  : "-"
+              }
+            </p>
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition w-full"
+              onclick="applyRequirement('${req._id}')">
+              Apply
+            </button>
+
+            <button
+              class="border border-white text-white px-4 py-2 rounded-xl font-semibold hover:bg-white hover:text-indigo-900 transition w-full"
+              onclick="viewCompany('${req.postedBy?._id}')">
+              View Profile
+            </button>
+          </div>
+
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error("Load error:", err);
+    alert("Failed to load requirements");
+  }
+}
+
+/* --------------------------------------------------
+   APPLY TO REQUIREMENT
+-------------------------------------------------- */
+async function applyRequirement(requirementId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5001/api/applications/${requirementId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Application failed");
+      return;
+    }
+
+    alert("Application submitted successfully ✅");
+  } catch (err) {
+    console.error("Apply error:", err);
+    alert("Error applying to requirement");
+  }
+}
+
+/* --------------------------------------------------
+   VIEW COMPANY PROFILE
+-------------------------------------------------- */
+function viewCompany(companyId) {
+  if (!companyId) {
+    alert("Company profile not available");
+    return;
+  }
+  window.location.href = `company_profile.html?id=${companyId}`;
+}
+
+window.addEventListener("DOMContentLoaded", loadRequirements);
+</script>
+
+</body>
+</html>

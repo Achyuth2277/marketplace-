@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea Marketplace</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .glass {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+
+  <script src="APIs.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white">
+
+<div class="container mx-auto px-4 py-6">
+
+  <!-- HEADER -->
+  <header class="glass flex flex-wrap justify-between items-center p-4 rounded-2xl shadow-xl mb-6">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-bold px-4 py-2 rounded-full">
+        IM
+      </div>
+      <div>
+        <div class="font-semibold text-lg">Idea Marketplace</div>
+        <div class="text-sm text-gray-200">Buy & Sell Creative Ideas</div>
+      </div>
+    </div>
+
+    <nav class="flex flex-wrap gap-5 text-gray-200 font-medium mt-3 md:mt-0">
+      <a href="home.html" class="hover:text-white">Marketplace</a>
+      <a href="creator.html" class="hover:text-white">Creator Dashboard</a>
+      <a href="company.html" class="hover:text-white">Companies</a>
+      <a href="indexlogin.html" class="hover:text-white">Login</a>
+    </nav>
+  </header>
+
+  <!-- HERO + STATS -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+    <!-- Hero Card -->
+    <div class="md:col-span-2 glass p-6 rounded-2xl shadow-xl">
+      <h1 class="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+        Discover Innovative Ideas
+      </h1>
+
+      <p class="text-gray-200 mb-4">
+        Companies can explore, purchase, or request fresh ideas. 
+        Creators can showcase and sell their creativity.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-5 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+          Explore Ideas
+        </button>
+        <button class="border border-white text-white px-5 py-2 rounded-xl font-semibold hover:bg-white hover:text-indigo-900 transition">
+          Post Requirement
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Active Listings</span>
+        <b class="text-xl text-pink-300">250+</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Companies</span>
+        <b class="text-xl text-indigo-300">120+</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Creators</span>
+        <b class="text-xl text-purple-300">500+</b>
+      </div>
+
+      <div class="glass p-4 rounded-xl text-center">
+        <span class="text-gray-200">Deals Closed</span>
+        <b class="text-xl text-green-300">320</b>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY GRID -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+
+    <div class="glass p-5 rounded-xl shadow hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-lg mb-1 text-pink-300">Marketing Ideas</h3>
+      <p class="text-gray-200">Campaigns, ads, and strategies to boost brand visibility.</p>
+    </div>
+
+    <div class="glass p-5 rounded-xl shadow hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-lg mb-1 text-indigo-300">Design Concepts</h3>
+      <p class="text-gray-200">Logos, packaging, and creative visuals for businesses.</p>
+    </div>
+
+    <div class="glass p-5 rounded-xl shadow hover:-translate-y-1 transition">
+      <h3 class="font-semibold text-lg mb-1 text-purple-300">Apps & Tech</h3>
+      <p class="text-gray-200">Software ideas, web tools, and mobile innovations.</p>
+    </div>
+
+  </section>
+
+  <!-- LISTINGS TABLE -->
+  <section class="glass p-6 rounded-xl shadow-xl mb-6">
+
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+      <h2 class="text-lg font-semibold text-white">Latest Requirements</h2>
+      <div class="flex gap-3">
+        <button class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-xl font-semibold">
+          + Post Requirement
+        </button>
+        <button class="border border-white text-white px-4 py-2 rounded-xl font-semibold">
+          Browse Creators
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-gray-400">
+            <th class="p-2">Company</th>
+            <th class="p-2">Requirement</th>
+            <th class="p-2">Budget</th>
+            <th class="p-2">Deadline</th>
+            <th class="p-2">Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="border-b border-gray-600">
+            <td class="p-2">BrightTech Inc</td>
+            <td class="p-2">Customer Engagement App</td>
+            <td class="p-2">$2,000</td>
+            <td class="p-2">15 Oct 2025</td>
+            <td class="p-2">
+              <span class="bg-green-500 text-white px-2 py-1 rounded-lg text-sm">Open</span>
+            </td>
+          </tr>
+
+          <tr class="border-b border-gray-600">
+            <td class="p-2">GreenBox Co</td>
+            <td class="p-2">Sustainable Packaging Ideas</td>
+            <td class="p-2">$800</td>
+            <td class="p-2">5 Oct 2025</td>
+            <td class="p-2">
+              <span class="bg-green-500 text-white px-2 py-1 rounded-lg text-sm">Open</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="p-2">NextWave Media</td>
+            <td class="p-2">Viral Marketing Campaign</td>
+            <td class="p-2">$1,200</td>
+            <td class="p-2">Closed</td>
+            <td class="p-2">
+              <span class="bg-red-500 text-white px-2 py-1 rounded-lg text-sm">Closed</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-gray-200 text-sm mt-6">
+    &copy; 2025 Idea Marketplace. Empowering creativity worldwide.
+  </footer>
+
+</div>
+</body>
+</html>

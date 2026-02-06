@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="chatBox"></div>
+
+<input id="msg" placeholder="Type message..." />
+<button onclick="sendMsg()">Send</button>
+
+<script>
+const CHAT_ID = "PASTE_CHAT_ID_HERE";
+
+async function sendMsg() {
+  const text = document.getElementById("msg").value;
+
+  await fetch("/api/chat/message", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chatRoomId: CHAT_ID,
+      message: text
+    })
+  });
+
+  loadMessages();
+}
+
+async function loadMessages() {
+  const res = await fetch("/api/chat/messages/" + CHAT_ID);
+  const data = await res.json();
+
+  document.getElementById("chatBox").innerHTML = data
+    .map(m => `<p>${m.message}</p>`)
+    .join("");
+}
+
+loadMessages();
+</script>
+
+</body>
+</html>

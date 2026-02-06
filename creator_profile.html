@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator Profile - Idea Marketplace</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .glass {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white flex flex-col items-center px-4 py-10">
+
+  <h1 class="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+    Creator Profile
+  </h1>
+
+  <div class="glass w-full max-w-3xl p-8 rounded-2xl shadow-xl animate-[fadeIn_0.8s_ease-in-out]">
+
+    <!-- BASIC INFO -->
+    <div class="space-y-3 mb-6">
+      <div class="flex justify-between">
+        <span class="font-semibold">Name:</span>
+        <span id="creatorName" class="text-gray-200">Loading...</span>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="font-semibold">Email:</span>
+        <span id="creatorEmail" class="text-gray-200">Loading...</span>
+      </div>
+
+      <div class="flex justify-between">
+        <span class="font-semibold">Member Since:</span>
+        <span id="creatorJoinDate" class="text-gray-200">Loading...</span>
+      </div>
+    </div>
+
+    <!-- IDEAS SECTION -->
+    <div class="mt-6">
+      <h3 class="text-xl font-semibold mb-3">Ideas by this Creator</h3>
+
+      <div id="creatorIdeas" class="space-y-3">
+        <p class="text-gray-200">Loading ideas...</p>
+      </div>
+    </div>
+
+    <!-- BACK BUTTON -->
+    <a href="company.html"
+      class="inline-block mt-6 bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-5 py-2 rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+      ⬅ Back to Dashboard
+    </a>
+  </div>
+
+<script>
+async function loadCreatorProfile() {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "indexlogin.html";
+    return;
+  }
+
+  if (role !== "company") {
+    alert("Access denied");
+    window.location.href = "indexlogin.html";
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const creatorId = params.get("id");
+
+  if (!creatorId) {
+    alert("No creator selected.");
+    window.location.href = "company.html";
+    return;
+  }
+
+  try {
+    // Fetch creator info
+    const res = await fetch(`http://localhost:5001/api/creators/${creatorId}`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    const creator = await res.json();
+    if (creator.message) throw new Error(creator.message);
+
+    document.getElementById("creatorName").textContent = creator.name || "Unknown";
+    document.getElementById("creatorEmail").textContent = creator.email || "N/A";
+
+    // ✅ FIX: Backend does NOT send createdAt → show "N/A" instead
+    document.getElementById("creatorJoinDate").textContent =
+      creator.createdAt
+        ? new Date(creator.createdAt).toLocaleDateString()
+        : "N/A";
+
+    // Fetch creator's ideas
+    const resIdeas = await fetch(
+      `http://localhost:5001/api/ideas/by-creator/${creatorId}`,
+      { headers: { "Authorization": "Bearer " + token } }
+    );
+
+    const ideas = await resIdeas.json();
+    const container = document.getElementById("creatorIdeas");
+    container.innerHTML = "";
+
+    if (!Array.isArray(ideas) || ideas.length === 0) {
+      container.innerHTML =
+        "<p class='text-gray-200'>No ideas uploaded yet.</p>";
+      return;
+    }
+
+    ideas.forEach(idea => {
+      const div = document.createElement("div");
+      div.className =
+        "glass p-4 rounded-xl border-l-4 border-pink-400 shadow-sm";
+
+      div.innerHTML = `
+        <h4 class="font-semibold text-lg">${idea.title}</h4>
+        <p class="text-gray-200 mt-1">${idea.description || "No description"}</p>
+        <small class="text-gray-300 block mt-1">
+          Created: ${new Date(idea.createdAt).toLocaleDateString()}
+        </small>
+      `;
+      container.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error("Error loading creator profile:", err);
+    alert("⚠️ Failed to load profile details.");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadCreatorProfile);
+</script>
+
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+</body>
+</html>

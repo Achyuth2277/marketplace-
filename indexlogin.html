@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Idea Marketplace</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .glass {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white flex items-center justify-center px-4">
+
+  <form id="loginForm"
+        class="glass w-full max-w-md p-8 rounded-2xl shadow-xl space-y-5">
+
+    <h1 class="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+      Login
+    </h1>
+
+   <!-- Role -->
+<div>
+  <label class="block mb-1 font-semibold">Register as:</label>
+  <div class="p-[2px] rounded-xl bg-gradient-to-r from-indigo-500 to-pink-500">
+    <select id="role" required
+      class="w-full p-3 rounded-xl bg-[#0f1220] text-white focus:outline-none">
+      <option value="">Select role</option>
+      <option value="creator">Creator</option>
+      <option value="company">Company</option>
+    </select>
+  </div>
+</div>
+
+
+    <!-- Email -->
+    <div>
+      <label class="block mb-1 font-semibold">Email:</label>
+      <input type="email" id="email" required
+        class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+        placeholder="Enter your email">
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label class="block mb-1 font-semibold">Password:</label>
+      <input type="password" id="password" required
+        class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+        placeholder="Enter your password">
+    </div>
+
+    <!-- Submit -->
+    <button type="submit"
+      class="w-full bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition">
+      Login
+    </button>
+
+    <p class="text-center text-gray-200">
+      Don’t have an account?
+      <a href="register.html" class="text-pink-300 hover:underline">Register here</a>
+    </p>
+
+  </form>
+
+<script>
+console.log("LOGIN SCRIPT LOADED");
+
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
+
+    if (!data.token || !data.user || !data.user.role) {
+      alert("Login failed: role missing");
+      return;
+    }
+
+    // ✅ SAVE CORRECTLY
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.user.role);
+
+    // ✅ REDIRECT
+    if (data.user.role === "creator") {
+      window.location.href = "creator.html";
+    } else if (data.user.role === "company") {
+      window.location.href = "company.html";
+    } else {
+      alert("Unknown role: " + data.user.role);
+    }
+
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Server error during login");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Company Inbox | Idea Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .glass {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white px-4 py-10">
+
+<div class="max-w-5xl mx-auto">
+
+  <!-- HEADER -->
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+        Creator Applications
+      </h2>
+      <p class="text-gray-200 mt-1">All proposals sent by creators</p>
+    </div>
+
+    <a href="company.html"
+       class="border border-white text-white px-4 py-2 rounded-xl hover:bg-white hover:text-indigo-900 transition">
+      ← Back to Dashboard
+    </a>
+  </div>
+
+  <!-- INBOX -->
+  <div id="inbox" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <p class="col-span-full text-gray-200">Loading applications...</p>
+  </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+
+async function loadInbox() {
+  const res = await fetch("http://localhost:5001/api/applications/company", {
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  });
+
+  const data = await res.json();
+  const box = document.getElementById("inbox");
+  box.innerHTML = "";
+
+  if (!Array.isArray(data) || data.length === 0) {
+    box.innerHTML =
+      `<p class="col-span-full text-gray-200 text-center">No applications yet</p>`;
+    return;
+  }
+
+  data.forEach(app => {
+    box.innerHTML += `
+      <div class="glass p-5 rounded-2xl shadow-lg hover:-translate-y-1 transition">
+
+        <div class="mb-3">
+          <h3 class="text-lg font-semibold">
+            ${app.creator.name}
+          </h3>
+          <p class="text-sm text-gray-200">${app.creator.email}</p>
+        </div>
+
+        <div class="text-gray-200 text-sm space-y-1">
+          <p><b>Requirement:</b> ${app.requirement.title}</p>
+          <p><b>Budget:</b> $${app.requirement.budget}</p>
+          <p><b>Message:</b> ${app.message}</p>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between">
+          <span class="text-xs px-3 py-1 rounded-full border border-white/40">
+            Status: ${app.status}
+          </span>
+        </div>
+
+      </div>
+    `;
+  });
+}
+
+loadInbox();
+</script>
+
+</body>
+</html>

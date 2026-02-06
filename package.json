@@ -1,0 +1,26 @@
+{
+  "name": "new-one",
+  "version": "1.0.0",
+  "description": "Marketplace backend",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.8.7",
+    "multer": "^2.0.2",
+    "react-scripts": "^0.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

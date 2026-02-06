@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Company Profile | Idea Marketplace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  .glass {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen text-white px-4 py-10">
+
+<div class="max-w-4xl mx-auto">
+
+  <!-- PROFILE CARD -->
+  <div class="glass p-8 rounded-2xl shadow-xl mb-8">
+    <h1 id="companyName"
+        class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+      Loading...
+    </h1>
+    <p id="companyEmail" class="text-gray-200 mt-1"></p>
+  </div>
+
+  <!-- REQUIREMENTS SECTION -->
+  <h2 class="text-2xl font-semibold mb-4 text-white">
+    Posted Requirements
+  </h2>
+
+  <div id="requirementsContainer"
+       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <p class="col-span-full text-gray-200">Loading requirements...</p>
+  </div>
+
+</div>
+
+<script>
+/* ---------------- AUTH CHECK ---------------- */
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Login required");
+  window.location.href = "indexlogin.html";
+}
+
+/* ---------------- GET COMPANY ID ---------------- */
+const params = new URLSearchParams(window.location.search);
+const companyId = params.get("id");
+
+if (!companyId) {
+  alert("Invalid company profile");
+  window.location.href = "creator_requirements.html";
+}
+
+/* ---------------- LOAD COMPANY ---------------- */
+async function loadCompanyProfile() {
+  try {
+    const res = await fetch(
+      `http://localhost:5001/api/companies/${companyId}`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    if (res.status === 401) {
+      localStorage.clear();
+      alert("Session expired");
+      window.location.href = "indexlogin.html";
+      return;
+    }
+
+    if (!res.ok) throw new Error("Company not found");
+
+    const company = await res.json();
+    document.getElementById("companyName").textContent =
+      company.name || "Company";
+    document.getElementById("companyEmail").textContent =
+      company.email || "-";
+
+    loadRequirementsFallback();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load company");
+  }
+}
+
+/* --------- LOAD REQUIREMENTS (FALLBACK SAFE) --------- */
+async function loadRequirementsFallback() {
+  try {
+    const res = await fetch(
+      "http://localhost:5001/api/requirements",
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const allReqs = await res.json();
+    const container = document.getElementById("requirementsContainer");
+    container.innerHTML = "";
+
+    const filtered = allReqs.filter(
+      r => r.postedBy && r.postedBy._id === companyId
+    );
+
+    if (filtered.length === 0) {
+      container.innerHTML =
+        `<p class="col-span-full text-gray-200">No requirements posted.</p>`;
+      return;
+    }
+
+    filtered.forEach(req => {
+      container.innerHTML += `
+        <div class="glass p-5 rounded-2xl shadow-lg hover:-translate-y-1 transition">
+          <h3 class="text-lg font-semibold mb-1">${req.title}</h3>
+          <p class="text-gray-200 mb-3">
+            ${req.description || "No description"}
+          </p>
+          <div class="text-sm text-gray-300">
+            <b>Budget:</b> $${req.budget || 0}<br>
+            <b>Deadline:</b>
+            ${
+              req.deadline
+                ? new Date(req.deadline).toLocaleDateString()
+                : "-"
+            }
+          </div>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("requirementsContainer").innerHTML =
+      `<p class="col-span-full text-red-200">Error loading requirements</p>`;
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadCompanyProfile);
+</script>
+
+</body>
+</html>

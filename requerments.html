@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Requirement | Idea Marketplace</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="APIs.js"></script>
+
+<style>
+  .glass {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 min-h-screen flex items-center justify-center px-4 py-10 text-white">
+
+  <div class="glass w-full max-w-xl p-8 rounded-2xl shadow-xl">
+
+    <h1 class="text-3xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-indigo-400">
+      Post Your Requirement
+    </h1>
+    <p class="text-center text-gray-200 mb-6">Describe what you need from creators</p>
+
+    <form id="requirementForm" class="space-y-5">
+
+      <!-- Title -->
+      <div>
+        <label class="block mb-1 font-semibold">Product Title <span class="text-pink-300">*</span></label>
+        <input type="text" id="title" required
+          class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+          placeholder="Enter a short, clear title" />
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block mb-1 font-semibold">Description <span class="text-pink-300">*</span></label>
+        <textarea id="description" rows="5" required
+          class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+          placeholder="Describe your requirement in detail..."></textarea>
+      </div>
+
+      <!-- Industry -->
+      <div>
+        <label class="block mb-1 font-semibold">Industry</label>
+        <input type="text" id="industry"
+          class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+          placeholder="e.g. Tech, Healthcare, Design" />
+      </div>
+
+      <!-- Budget -->
+      <div>
+        <label class="block mb-1 font-semibold">Budget (USD)</label>
+        <input type="number" id="budget"
+          class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+          placeholder="Enter estimated budget" />
+      </div>
+
+      <!-- Deadline -->
+      <div>
+        <label class="block mb-1 font-semibold">Deadline</label>
+        <input type="date" id="deadline"
+          class="w-full p-3 rounded-xl bg-white/10 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-pink-400" />
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button type="submit"
+          class="bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition w-full">
+          Submit Requirement
+        </button>
+
+        <button type="reset"
+          class="border border-white text-white px-6 py-3 rounded-xl font-semibold hover:bg-white hover:text-indigo-900 transition w-full">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+<script>
+document.getElementById("requirementForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("⚠️ Please log in as a company before posting a requirement.");
+    window.location.href = "indexlogin.html";
+    return;
+  }
+
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const industry = document.getElementById("industry").value;
+  const budget = document.getElementById("budget").value;
+  const deadline = document.getElementById("deadline").value;
+
+  try {
+    const res = await fetch("http://localhost:5001/api/requirements", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ title, description, industry, budget, deadline })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("✅ Requirement posted successfully!");
+      document.getElementById("requirementForm").reset();
+    } else {
+      alert("❌ Error: " + (data.message || "Something went wrong"));
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("⚠️ Failed to connect to the server. Please try again later.");
+  }
+});
+</script>
+
+</body>
+</html>
