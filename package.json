@@ -4,6 +4,7 @@
   "description": "Marketplace backend",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],
@@ -24,3 +25,4 @@
     "nodemon": "^3.1.10"
   }
 }
+
